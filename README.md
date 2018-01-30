@@ -1,5 +1,6 @@
 # Project Title
 A ver simple drag and drop task organizer built with Vanilla Javascript. 
+>> Any feedback more than welcome :-)
 
 ### Improvements
 A couple of known bugs to be addressed referring to the Drag and Drop API.
