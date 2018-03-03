@@ -1,4 +1,4 @@
-# Project Title
+# Simple Drag and Drop Task Organizer
 A very simple drag and drop task organizer built with Vanilla Javascript. Its contents are stored client-side using the Indexed Data-base. 
 Any feedback more than welcome :-)
 
