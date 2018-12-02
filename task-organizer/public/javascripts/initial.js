@@ -1,23 +1,15 @@
+import createElement from "./functions/create-element.js";
+import storeProj from "./functions/store-project.js";
+
 (function() {
-  console.clear();
 
   var main = document.getElementById("main");
-
-  var storeProj = (titles, tasks) => {
-    var project = new Object();
-    titles.map((el, i) => {
-      var tsk = tasks[i]
-        .filter((el) => el != undefined).filter((el) => el.length > 0);
-      project[el] = tsk;
-    });
-    return project;
-  };
 
   var updateDB = () => {
     var contents = [...document.getElementsByClassName("projectBoard")]
       .filter((el) => el.children.length > 1);
 
-    var titles = contents.map((el) => [...el.children]).map((el) => el[0].firstChild.innerText);
+    var titles = contents.map(el => [...el.children]).map(el => el[0].firstChild.innerText);
 
     var rawTasks = contents.map(el => [...el.children]);
     rawTasks.map(el => el.shift());
@@ -38,7 +30,7 @@
   var openRequest = indexedDB.open("myProjects", 1);
   var newDB = false;
 
-  openRequest.onupgradeneeded = (e) => {
+  openRequest.onupgradeneeded = e => {
     var db = e.target.result;
     if (!db.objectStoreNames.contains('projects')) {
       db.createObjectStore('projects', {
@@ -50,13 +42,13 @@
     };
   };
 
-  openRequest.onsuccess = (e) => {
+  openRequest.onsuccess = e => {
     db = e.target.result;
     if (!newDB)
       DB_retrieveProjects();
   };
 
-  openRequest.onerror = (e) => {
+  openRequest.onerror = e => {
     console.log('onerror');
     console.dir(e);
   };
@@ -67,10 +59,10 @@
     var projUpdated = updateDB();
     console.log(projUpdated);
     var request = store.put(projUpdated, 1);
-    request.onsuccess = (e) => {
+    request.onsuccess = e => {
       console.log("new DB saved ");
     };
-    request.onerror = (e) => {
+    request.onerror = e => {
       console.log("Error", e.target.error.name)
     };
   };
@@ -90,7 +82,7 @@
 
   // DRAG DROP BELOW
 
-  var dragStart = (ev) => {
+  var dragStart = ev => {
     var startEl = ev.target,
       numOfChildren = filterDivs([...startEl.children]).length,
       divList = [...startEl.parentNode.children],
@@ -101,11 +93,11 @@
     ev.dataTransfer.effectAllowed = "move";
   };
 
-  var filterDivs = (arr) => {
+  var filterDivs = arr => {
     return arr.filter(el => el.tagName == "DIV");
   };
 
-  var drop = (ev) => {
+  var drop = ev => {
     var dropElmnt = ev.target.tagName != "DIV" ?
       ev.target.parentNode :
       ev.target;
@@ -131,7 +123,7 @@
     ev.stopPropagation();
   };
 
-  var dragEnterAndOver = (ev) => {
+  var dragEnterAndOver = ev => {
     ev.dataTransfer.dropEffect = "move";
     ev.preventDefault();
     ev.stopPropagation();
@@ -140,37 +132,24 @@
   // PROJECT / TASK CREATION
 
   // funct below to be re-done
-  var removeElement = (el) => {
+  var removeElement = el => {
     var parentTask = el.target.parentNode,
       parentProject = parentTask.parentNode;
 
     if (el.target.classList == "projRemover") {
       parentProject.remove();
-      createProjBoard(main, false); console.log("one");
+      createProjBoard(main, false);
     }
 
-    if (parentTask.draggable == false) { console.log("two");
+    if (parentTask.draggable == false) {
       parentProject.remove();
-    } else { console.log("three");
+    } else {
       parentTask.remove();
       parentProject.getElementsByClassName("hide_A_Moment")[0]
         .classList.remove("hide_A_Moment");
     }
   };
 
-  var createElement = (el) => {
-    var temp = document.createElement(el);
-    return (type, attr) => {
-      if (type || attr) temp.setAttribute(type, attr);
-      return (txt) => {
-        if (txt) temp.innerText = txt;
-        return (event, func) => {
-          temp.addEventListener(event, func);
-          return temp;
-        };
-      };
-    };
-  };
 
   var populateExisCont = (targ, content) => {
 
@@ -201,9 +180,11 @@
     createProjBoard(main, false);
   };
 
+
   var createProjBoard = (target, exist_Content) => {
     if (exist_Content != false) {
-      var titles = Object.keys(exist_Content), i = 0;
+      var titles = Object.keys(exist_Content),
+        i = 0;
       while (i < titles.length) {
 
         var projBoard = createElement("div")("class", "projectBoard")()();
@@ -220,7 +201,7 @@
       return;
     }
 
-    var createProjBox =(ev)=> {
+    var createProjBox = (ev) => {
       project_Box(ev.target.parentNode);
       ev.target.remove();
     };
@@ -277,14 +258,14 @@
           }
         });
 
-        taskName.setAttribute("value", existCont);
+      taskName.setAttribute("value", existCont);
 
       [taskName, removeIt].forEach(el => parent.append(el));
       taskName.focus();
     } // if
   };
 
-  var pushTaskName = (el) => {
+  var pushTaskName = el => {
     var userInput = el.target.value;
     var parentTask = el.target.parentNode;
 
@@ -300,7 +281,7 @@
     }
   };
 
-  var newTaskShell = (exist_Cont) => {
+  var newTaskShell = exist_Cont => {
 
     var projTask = createElement("div")("class", "projTask")()
       ("click", changeTaskName);
@@ -322,7 +303,7 @@
     return projTask;
   };
 
-  var taskCreater = (el) => {
+  var taskCreater = el => {
     var targ = el.target,
       parent = targ.parentNode,
       currentProject = parent.parentNode;
@@ -343,7 +324,7 @@
     parent.append(projTask);
   }
 
-  var projectTitle = (el) => {
+  var projectTitle = el => {
     var targ = el.target;
     var userInput = targ.value;
     var parentProject = targ.parentNode.parentNode;
@@ -366,7 +347,7 @@
     };
   };
 
-  var project_Box =(target)=> {
+  var project_Box = target => {
     var projectBox = createElement("div")("class", "projectBox")()();
     var projTitle = createElement("input")
       ("placeholder", "Add Project...")()('keydown', projectTitle);
@@ -379,5 +360,5 @@
     projTitle.focus();
   };
 
-    setInterval(DB_saveProjects, 20000);
+  setInterval(DB_saveProjects, 20000);
 })();
